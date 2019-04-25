@@ -1,7 +1,11 @@
 .body-screen { -fx-background-color: #FFF2CC; }
+
 .quiz-text { 
-	-fx-padding : 30; 
 	-fx-font-size: 32px;
+}
+
+.quiz-questiontext {
+	-fx-font-size: 20px;
 }
 
 .quiz-vbox {
@@ -21,4 +25,8 @@
 	-fx-fill: cyan;
 	-fx-stroke: black;
 	-fx-stroke-width: 5px;
+}
+
+.quiz-image {
+	-fx-padding: 0 50 200 0;
 }
