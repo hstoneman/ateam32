@@ -36,7 +36,7 @@ public class Main extends Application {
   Button nextQuestion;
   ImageView view;
 
-  private Scene initialize() {
+  private Scene initialize(Stage primaryStage) {
     BorderPane root = new BorderPane();
     root.getStyleClass().add("body-screen");
 
@@ -123,15 +123,6 @@ public class Main extends Application {
     }
   }
 
-  @Override
-  public void start(Stage primaryStage) throws Exception {
-
-    primaryStage.setScene(homepage(primaryStage));
-    primaryStage.setTitle("Quiz Generator - A Team 32");
-    primaryStage.show();
-
-  }
-
   private Scene homepage(Stage primaryStage) throws Exception {
 
     // Declare BorderPane
@@ -152,6 +143,7 @@ public class Main extends Application {
     vBox2.getChildren().add(textField);
 
     // Creates a new question collection with the file entered.
+//    textField.setOnMouseClicked(textField.setText(""));
     String filePath = textField.getText();
     QuestionCollection qc = new QuestionCollection(filePath);
 
@@ -217,7 +209,7 @@ public class Main extends Application {
     addQ.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        primaryStage.setScene(addQuestion());
+        primaryStage.setScene(addQuestion(primaryStage));
       }
     });
 
@@ -243,7 +235,7 @@ public class Main extends Application {
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        primaryStage.setScene(initialize());
+        primaryStage.setScene(initialize(primaryStage));
       }
     });
 
@@ -266,7 +258,7 @@ public class Main extends Application {
     return homepage;
   }
 
-  private Scene addQuestion() {
+  private Scene addQuestion(Stage primaryStage) {
 
     GridPane grid = new GridPane();
     grid.setHgap(10);
@@ -287,7 +279,7 @@ public class Main extends Application {
     // Buttons
     Button choice = new Button("ADD CHOICE");
     Button submit = new Button("SUBMIT");
-    submit.setStyle("-fx-background-color: #00ff00");
+    submit.setStyle("-fx-background-color: #C9EEFF");
 
     // Text fields
     TextField textField1 = new TextField("Question Text");
@@ -309,10 +301,23 @@ public class Main extends Application {
     grid.add(col1, 0, 1);
     grid.add(col2, 1, 1);
 
+    // BorderPane setting
+    BorderPane border = new BorderPane();
+    border.setCenter(grid);
+
     // Scene setting
-    Scene scene = new Scene(grid, 1000, 600);
-    scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+    Scene scene = new Scene(border, 1000, 600);
+    scene.getStylesheets().add("application.css");
     return scene;
+  }
+
+  @Override
+  public void start(Stage primaryStage) throws Exception {
+
+    primaryStage.setScene(homepage(primaryStage));
+    primaryStage.setTitle("Quiz Generator - A Team 32");
+    primaryStage.show();
+
   }
 
   public static void main(String[] args) {
