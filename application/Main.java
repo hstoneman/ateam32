@@ -1,7 +1,9 @@
 package application;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import org.json.simple.parser.ParseException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,7 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -75,22 +76,28 @@ public class Main extends Application {
     root.setRight(imagePane);
     Scene scene = new Scene(root, 1000, 600);
     scene.getStylesheets().add("application/test.css");
+    try {
+        setQuestion(new ParseJSON("test.json").parseFile().get(0) );
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+    } catch (IOException e) {
+        e.printStackTrace();
+    } catch (ParseException e) {
+
+        e.printStackTrace();
+    }
     return scene;
   }
 
-  void setQuestion(String question, String[] answers, List<Integer> correctIndices) {
-    questionLabel.setText(question);
+  void setQuestion(Question question) {
+    questionLabel.setText(question.getQuestionText());
     questionButtonBox.getChildren().clear();
 
-    for (int i = 0; i < answers.length; i++) {
+    for (int i = 0; i < question.choices().length; i++) {
       questionButtonBox.getChildren().add(new ButtonPair((char) ('A' + i) + "", nextQuestion,
-          answers[i], correctIndices.contains(i)).box);
+          question.choices()[i], i == question.getAnswer()).box);
     }
-  }
-
-  void setQuestion(String question, String[] answers, List<Integer> correctIndices, Image image) {
-    view.setImage(image);
-    setQuestion(question, answers, correctIndices);
+    view.setImage(question.getImage());
   }
 
   class ButtonPair {
