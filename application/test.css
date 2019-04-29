@@ -1,0 +1,32 @@
+.body-screen { -fx-background-color: #FFF2CC; }
+
+.quiz-text { 
+    -fx-font-size: 32.0px;
+}
+
+.quiz-questiontext {
+    -fx-font-size: 20.0px;
+}
+
+.quiz-vbox {
+    -fx-spacing: 30.0px;
+    -fx-padding:  50.0px 0.0 0.0 20.0px;
+}
+
+.quiz-hbox {
+    -fx-spacing: 10.0px;
+}
+
+.quiz-button {
+    -fx-background-color: cyan;
+}
+
+.quiz-rect {
+    -fx-fill: cyan;
+    -fx-stroke: black;
+    -fx-stroke-width: 5.0px;
+}
+
+.quiz-image {
+    -fx-padding: 0.0 50.0 200.0 0.0;
+}
