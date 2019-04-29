@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -38,6 +41,23 @@ public class Main extends Application {
             but.setMinWidth(300);
             but.setStyle("-fx-background-color: cyan;");
             but.setAlignment(Pos.BASELINE_LEFT);
+            DropShadow shadow = new DropShadow();
+            but.addEventHandler(MouseEvent.MOUSE_ENTERED, 
+                    new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent e) {
+                            but.setEffect(shadow);
+                        }
+                    }
+            );
+            but.addEventHandler(MouseEvent.MOUSE_EXITED, 
+                    new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent e) {
+                            but.setEffect(null);
+                        }
+                    }
+            );
             but.setOnAction(
                 correctAnswer ?    
                 (ActionEvent event) -> { 
@@ -64,7 +84,7 @@ public class Main extends Application {
         // these labels will become private fields that will later be updated
         Label quizNo = new Label("Question 1/???");
         questionLabel = new Label("Question not initialized!");
-        Label questionsAnswered = new Label("Questions answered: ???/???");
+        Label questionsAnswered = new Label("Questions answered: ???/??? (Click the corresponding button to your answer)");
         
         labelPair.getChildren().addAll(quizNo, questionLabel, questionsAnswered);
         quizNo.getStyleClass().add("quiz-text");
