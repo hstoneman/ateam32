@@ -23,6 +23,10 @@ import javafx.stage.Stage;
 
 public class QuizHomepageWindow {
   static QuestionCollection qc;
+  static int numberQ;
+  static String filepath;
+  static ArrayList<String> userTopics;
+  
   static void homepage(Stage primaryStage) throws Exception {
     // Declare BorderPane
     BorderPane border = new BorderPane();
@@ -41,12 +45,11 @@ public class QuizHomepageWindow {
     // Create TextField to get the path for the JSON file.
     TextField textField = new TextField("Enter JSon file path");
     hBox1.getChildren().add(textField);
-    Button enter = new Button("Enter");
+    Button enter = new Button("Load");
     hBox1.getChildren().add(enter);
     vBox2.getChildren().add(hBox1);
 
     // Creates a new question collection with the file entered.
-    // textField.setOnAction(e -> String filePath = textField.getText());
 
     ArrayList<String> qTopics = new ArrayList<String>();
     // Create instance of a combo box and ArrayList of strings for the choices.
@@ -62,7 +65,7 @@ public class QuizHomepageWindow {
           qc = new QuestionCollection(filePath);
           qc.buildQuestionCollection();
           // Populates test values for Choices
-          choice.clear();
+          userTopics = new ArrayList<String>();
           qTopics.clear();
           qTopics.add(0, "<Select>");
           qTopics.addAll(qc.getTopics());
@@ -80,11 +83,11 @@ public class QuizHomepageWindow {
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
               if (!choice.contains(t1)) {
-                choice.add(t1);
-                selected.setText("Topics selected: " + choice.toString());
+                userTopics.add(t1);
+                selected.setText("Topics selected: " + userTopics.toString());
               } else {
-                choice.remove(t1);
-                selected.setText("Topics selected: " + choice.toString());
+                userTopics.remove(t1);
+                selected.setText("Topics selected: " + userTopics.toString());
               }
             }
           });
@@ -126,7 +129,7 @@ public class QuizHomepageWindow {
     addQ.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        //primaryStage.setScene(addQuestion(primaryStage));
+        // primaryStage.setScene(addQuestion(primaryStage));
       }
     });
 
@@ -140,19 +143,20 @@ public class QuizHomepageWindow {
     numQ.setOnAction(e -> isInt(numQ, numQ.getText()));
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
-    
-//
-//    try {
-//      Integer numQuestions = Integer.parseInt(numQ.getText());
-//    } catch (Exception E) {
-//
-//    }
+
+    //
+    // try {
+    // Integer numQuestions = Integer.parseInt(numQ.getText());
+    // } catch (Exception E) {
+    //
+    // }
 
     // Start Button to start the quiz
     Button start = new Button("StartQuiz");
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
+        qc.buildQuizQuestions(qTopics);
         QuizMainWindow.initializeQuiz(primaryStage, qc.getRandomQuestions());
       }
     });
@@ -177,13 +181,37 @@ public class QuizHomepageWindow {
   }
 
   private static boolean isInt(TextField inputField, String text) {
+    buildQuiz();
     try {
-      int number = Integer.parseInt(text);
+      numberQ = Integer.parseInt(text);
       return true;
     } catch (NumberFormatException e) {
       inputField.setText("Enter a number!");
       return false;
+    } catch (NullPointerException npe) {
+      inputField.setText("Load a file and select topics first.");
+      return false;
     }
   }
 
+  private static void buildQuiz() {
+    
+    qc = new QuestionCollection(filepath);
+    try {
+      qc.buildQuestionCollection();
+    } catch (FileNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    qc.buildQuizQuestions(userTopics);
+    qc.randomSelection(numberQ);
+    System.out.println("Quiz has been built");
+    
+  }
 }
