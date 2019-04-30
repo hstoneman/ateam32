@@ -1,0 +1,143 @@
+package application;
+
+import java.util.ArrayList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+public class QuizMainWindow {
+    static Label questionLabel;
+    static VBox questionButtonBox;
+    static Button nextQuestion;
+    static ImageView view;
+    static int curQuestion = 0;
+    static ArrayList<Question> questions;
+    static Label quizNo;
+    static Label correctDisplay;
+    static int correctAnswers = 0;
+    
+    static void initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
+      correctAnswers = curQuestion = 0;
+      QuizMainWindow.questions = questions;
+      BorderPane root = new BorderPane();
+      root.getStyleClass().add("body-screen");
+
+      VBox labelPair = new VBox();
+
+      quizNo = new Label("Question " + "/" + questions.size());
+      correctDisplay = new Label("not initialized!");
+      questionLabel = new Label("Question not initialized!");
+      questionLabel.setWrapText(true);
+
+      labelPair.getChildren().addAll(quizNo, questionLabel, correctDisplay);
+      quizNo.getStyleClass().add("quiz-text");
+      questionLabel.getStyleClass().add("quiz-questiontext");
+      correctDisplay.getStyleClass().add("quiz-questiontext");
+      root.setTop(labelPair);
+
+      nextQuestion = new Button("Next Question!");
+      nextQuestion.setOnAction((ActionEvent event) -> {
+          if(curQuestion < questions.size()) setQuestion(questions.get(curQuestion));
+          else QuizFinalWindow.initializeFinalWindow(primaryStage, curQuestion, correctAnswers, questions.size());
+      });
+      nextQuestion.setVisible(false);
+      BorderPane.setAlignment(nextQuestion, Pos.BOTTOM_CENTER);
+      root.setBottom(nextQuestion);
+      StackPane imagePane = new StackPane();
+      view = new ImageView();
+
+      imagePane.getChildren().add(view);
+      imagePane.getStyleClass().add("quiz-image");
+      view.setFitHeight(200);
+      view.setFitWidth(200);
+
+      questionButtonBox = new VBox();
+
+      questionButtonBox.getStyleClass().add("quiz-vbox");
+
+      root.setLeft(questionButtonBox);
+      root.setRight(imagePane);
+      Scene scene = new Scene(root, 1000, 600);
+      scene.getStylesheets().add("application/test.css");
+      setQuestion(questions.get(0));
+      primaryStage.setScene(scene);
+    }
+    
+    static void setQuestion(Question question) {
+      curQuestion++;
+      quizNo.setText("Question " + curQuestion + "/" + questions.size());
+      correctDisplay.setText("Questions answered correctly: " + correctAnswers);
+      nextQuestion.setVisible(false);
+      questionLabel.setText(question.getQuestionText());
+      questionButtonBox.getChildren().clear();
+
+      for (int i = 0; i < question.choices().length; i++) {
+        questionButtonBox.getChildren().add(new ButtonPair((char) ('A' + i) + "", nextQuestion,
+                question.choices()[i], i == question.getAnswer()).box);
+      }
+      view.setImage(question.getImage());
+    }
+
+    static class ButtonPair {
+
+      private HBox box;
+
+      private ButtonPair(String optionText, Node view, String answerText, boolean correctAnswer) {
+        box = new HBox();
+        box.getStyleClass().add("quiz-hbox");
+        Text text = new Text(optionText);
+        StackPane pane = new StackPane();
+        Rectangle rect = new Rectangle(26, 26);
+        pane.getChildren().addAll(rect, text);
+        rect.getStyleClass().add("quiz-rect");
+        box.getChildren().add(pane);
+        Button but = new Button(answerText);
+        but.setMinWidth(300);
+        but.setStyle("-fx-background-color: cyan;");
+        but.setAlignment(Pos.BASELINE_LEFT);
+        DropShadow shadow = new DropShadow();
+        but.addEventHandler(MouseEvent.MOUSE_ENTERED, 
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent e) {
+                        but.setEffect(shadow);
+                    }
+                }
+        );
+        but.addEventHandler(MouseEvent.MOUSE_EXITED, 
+                new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent e) {
+                        but.setEffect(null);
+                    }
+                }
+        );
+        but.setOnAction(correctAnswer ? (ActionEvent event) -> {
+          but.setStyle("-fx-background-color: lime;" + "-fx-text-fill: white;");
+          but.setText("Correct!");
+          view.setVisible(true);
+          correctAnswers++;
+          correctDisplay.setText("Questions answered correctly: " + correctAnswers);
+        } : (ActionEvent event) -> {
+          but.setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
+          but.setText("Incorrect!");
+          view.setVisible(true);
+        });
+        box.getChildren().add(but);
+      }
+    }
+}
