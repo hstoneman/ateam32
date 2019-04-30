@@ -69,9 +69,8 @@ public class Main extends Application {
         else initializeFinalWindow(primaryStage);
     });
     nextQuestion.setVisible(false);
+    BorderPane.setAlignment(nextQuestion, Pos.BOTTOM_CENTER);
     root.setBottom(nextQuestion);
-    BorderPane.setAlignment(nextQuestion, Pos.BOTTOM_RIGHT);
-
     StackPane imagePane = new StackPane();
     view = new ImageView();
 
