@@ -3,6 +3,7 @@ package application;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import org.json.simple.parser.ParseException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -36,26 +37,33 @@ public class Main extends Application {
   VBox questionButtonBox;
   Button nextQuestion;
   ImageView view;
-
-  private Scene initialize(Stage primaryStage) {
+  int curQuestion = 0;
+  ArrayList<Question> questions;
+  Label quizNo;
+  int correctAnswers = 0;
+  
+  private Scene initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
+    this.questions = questions;
     BorderPane root = new BorderPane();
     root.getStyleClass().add("body-screen");
 
     VBox labelPair = new VBox();
 
     // these labels will become private fields that will later be updated
-    Label quizNo = new Label("Question 1/???");
+    quizNo = new Label("Question " + "/" + questions.size());
     questionLabel = new Label("Question not initialized!");
-    Label questionsAnswered = new Label("Questions answered: ???/???");
 
-    labelPair.getChildren().addAll(quizNo, questionLabel, questionsAnswered);
+    labelPair.getChildren().addAll(quizNo, questionLabel);
     quizNo.getStyleClass().add("quiz-text");
     questionLabel.getStyleClass().add("quiz-questiontext");
-    questionsAnswered.getStyleClass().add("quiz-questiontext");
 
     root.setTop(labelPair);
 
     nextQuestion = new Button("Next Question!");
+    nextQuestion.setOnAction((ActionEvent event) -> {
+        if(curQuestion < questions.size()) setQuestion(questions.get(curQuestion));
+        else System.out.println("Max questions!");
+    });
     nextQuestion.setVisible(false);
     root.setBottom(nextQuestion);
     BorderPane.setAlignment(nextQuestion, Pos.BOTTOM_RIGHT);
@@ -76,20 +84,14 @@ public class Main extends Application {
     root.setRight(imagePane);
     Scene scene = new Scene(root, 1000, 600);
     scene.getStylesheets().add("application/test.css");
-    try {
-        setQuestion(new ParseJSON("test.json").parseFile().get(0) );
-    } catch (FileNotFoundException e) {
-        e.printStackTrace();
-    } catch (IOException e) {
-        e.printStackTrace();
-    } catch (ParseException e) {
-
-        e.printStackTrace();
-    }
+    setQuestion(questions.get(0));
     return scene;
   }
 
   void setQuestion(Question question) {
+    curQuestion++;
+    quizNo.setText("Question " + curQuestion + "/" + questions.size());
+    nextQuestion.setVisible(false);
     questionLabel.setText(question.getQuestionText());
     questionButtonBox.getChildren().clear();
 
@@ -121,6 +123,7 @@ public class Main extends Application {
         but.setStyle("-fx-background-color: lime;" + "-fx-text-fill: white;");
         but.setText("Correct!");
         view.setVisible(true);
+        correctAnswers++;
       } : (ActionEvent event) -> {
         but.setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
         but.setText("Incorrect!");
@@ -242,7 +245,12 @@ public class Main extends Application {
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        primaryStage.setScene(initialize(primaryStage));
+        try {
+            primaryStage.setScene(initializeQuiz(primaryStage, new ParseJSON("test.json").parseFile()));
+        } catch (IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
       }
     });
 
