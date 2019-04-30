@@ -1,8 +1,11 @@
 package application;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+
 import org.json.simple.parser.ParseException;
 import javafx.scene.image.Image;
 
@@ -16,8 +19,9 @@ import javafx.scene.image.Image;
 public class QuestionCollection {
   private ArrayList<Question> questions;
   private ArrayList<String> topics;
-  private ParseJSON parser;
-  private ArrayList<Question> userQuestions;
+  public ParseJSON parser;
+  private ArrayList<Question> topicQuestions;
+  private ArrayList<Question> randomQuestions;
   
   /**
    * constructor to initialize all fields
@@ -27,7 +31,8 @@ public class QuestionCollection {
     parser = new ParseJSON(filepath);
     questions = new ArrayList<Question>();
     topics = new ArrayList<String>();
-    userQuestions = new ArrayList<Question>();
+    topicQuestions = new ArrayList<Question>();
+    randomQuestions = new ArrayList<Question>();
   }
   
   /**
@@ -69,19 +74,39 @@ public class QuestionCollection {
    * @param topics
    */
   public void buildQuizQuestions(ArrayList<String> topics) {
-    ArrayList<Question> quizQuestions = new ArrayList<Question>();
     for (int i = 0; i < topics.size(); i++) {
-      ArrayList<Question> topicQuestions = getQuestionsByTopic(topics.get(i));
-      quizQuestions.addAll(topicQuestions);
+      ArrayList<Question> possibleQuestions = getQuestionsByTopic(topics.get(i));
+      topicQuestions.addAll(possibleQuestions);
     }
   }
   
   /**
-   * method to get the questions for the quiz
+   * method to randomly select a number of questions from the total question list compiled from the topics
+   * @param n is the number of questions to pick
+   */
+  public void randomSelection(int n) {
+	  Random rng = new Random();
+	  for (int i = 0; i < n; i++) {
+		  int index = rng.nextInt(topicQuestions.size());
+		  Question q = topicQuestions.get(index);
+		  randomQuestions.add(q);
+	  }
+  }
+  
+  /**
+   * method to get the topic questions for the quiz
    * @return
    */
-  public ArrayList<Question> getQuestions() {
-    return this.userQuestions;
+  public ArrayList<Question> getTopicQuestions() {
+    return this.topicQuestions;
+  }
+  
+  /**
+   * method to get a set number of random questions for the quiz
+   * @return
+   */
+  public ArrayList<Question> getRandomQuestions() {
+    return this.randomQuestions;
   }
   
   /**
@@ -93,7 +118,7 @@ public class QuestionCollection {
    * @param choiceArray
    * @param answer
    */
-  public void addQuestion(String metadata, String questionText, String topic, Image image, String[] choiceArray, int answer) {
+  public void addQuestion(String metadata, String questionText, String topic, String image, String[] choiceArray, int answer) {
     Question q = new Question(metadata, questionText, topic, image, choiceArray, answer);
     questions.add(q);
   }
@@ -117,7 +142,7 @@ public class QuestionCollection {
    * @return
    */
   public int getSize() {
-    return userQuestions.size();
+    return topicQuestions.size();
   }
   
   /**

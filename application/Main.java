@@ -3,7 +3,6 @@ package application;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.json.simple.parser.ParseException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -37,37 +37,26 @@ public class Main extends Application {
   VBox questionButtonBox;
   Button nextQuestion;
   ImageView view;
-  int curQuestion = 0;
-  ArrayList<Question> questions;
-  Label quizNo;
-  Label correctDisplay;
-  int correctAnswers = 0;
-  
-  private Scene initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
-    correctAnswers = curQuestion = 0;
-    this.questions = questions;
+
+  private Scene initialize(Stage primaryStage) {
     BorderPane root = new BorderPane();
     root.getStyleClass().add("body-screen");
 
     VBox labelPair = new VBox();
 
     // these labels will become private fields that will later be updated
-    quizNo = new Label("Question " + "/" + questions.size());
-    correctDisplay = new Label("not initialized!");
+    Label quizNo = new Label("Question 1/???");
     questionLabel = new Label("Question not initialized!");
-    questionLabel.setWrapText(true);
+    Label questionsAnswered = new Label("Questions answered: ???/???");
 
-    labelPair.getChildren().addAll(quizNo, questionLabel, correctDisplay);
+    labelPair.getChildren().addAll(quizNo, questionLabel, questionsAnswered);
     quizNo.getStyleClass().add("quiz-text");
     questionLabel.getStyleClass().add("quiz-questiontext");
-    correctDisplay.getStyleClass().add("quiz-questiontext");
+    questionsAnswered.getStyleClass().add("quiz-questiontext");
+
     root.setTop(labelPair);
 
     nextQuestion = new Button("Next Question!");
-    nextQuestion.setOnAction((ActionEvent event) -> {
-        if(curQuestion < questions.size()) setQuestion(questions.get(curQuestion));
-        else System.out.println("Max questions!");
-    });
     nextQuestion.setVisible(false);
     root.setBottom(nextQuestion);
     BorderPane.setAlignment(nextQuestion, Pos.BOTTOM_RIGHT);
@@ -88,15 +77,20 @@ public class Main extends Application {
     root.setRight(imagePane);
     Scene scene = new Scene(root, 1000, 600);
     scene.getStylesheets().add("application/test.css");
-    setQuestion(questions.get(0));
+    try {
+      setQuestion(new ParseJSON("test.json").parseFile().get(0));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (ParseException e) {
+
+      e.printStackTrace();
+    }
     return scene;
   }
 
   void setQuestion(Question question) {
-    curQuestion++;
-    quizNo.setText("Question " + curQuestion + "/" + questions.size());
-    correctDisplay.setText("Questions answered correctly: " + correctAnswers);
-    nextQuestion.setVisible(false);
     questionLabel.setText(question.getQuestionText());
     questionButtonBox.getChildren().clear();
 
@@ -104,7 +98,7 @@ public class Main extends Application {
       questionButtonBox.getChildren().add(new ButtonPair((char) ('A' + i) + "", nextQuestion,
           question.choices()[i], i == question.getAnswer()).box);
     }
-    view.setImage(question.getImage());
+    view.setImage(new Image(question.getImage()));
   }
 
   class ButtonPair {
@@ -128,8 +122,6 @@ public class Main extends Application {
         but.setStyle("-fx-background-color: lime;" + "-fx-text-fill: white;");
         but.setText("Correct!");
         view.setVisible(true);
-        correctAnswers++;
-        correctDisplay.setText("Questions answered correctly: " + correctAnswers);
       } : (ActionEvent event) -> {
         but.setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
         but.setText("Incorrect!");
@@ -159,18 +151,17 @@ public class Main extends Application {
     vBox2.getChildren().add(textField);
 
     // Creates a new question collection with the file entered.
-//    textField.setOnMouseClicked(textField.setText(""));
+    // textField.setOnAction(e -> String filePath = textField.getText());
+
     String filePath = textField.getText();
     QuestionCollection qc = new QuestionCollection(filePath);
+    qc.parser.parseFile();
 
     // Populates test values for Choices
     ArrayList<String> qTopics = new ArrayList<String>();
-    qTopics = qc.getTopics();
     qTopics.add(0, "<Select>");
-    qTopics.add("Topic 1");
-    qTopics.add("Topic 2");
-    qTopics.add("Topic 3");
-    qTopics.add("Topic 4");
+    qTopics = qc.getTopics();
+
 
     // Create instance of a combo box and ArrayList of strings for the choices.
     ArrayList<String> choice = new ArrayList<String>();
@@ -236,7 +227,7 @@ public class Main extends Application {
 
     Text numQuestionPrompt = new Text("Enter number of questions to use: ");
     TextField numQ = new TextField();
-
+    // numQ.setOnAction(e -> isInt(numQ, numQ.getText()));
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
 
@@ -251,12 +242,7 @@ public class Main extends Application {
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        try {
-            primaryStage.setScene(initializeQuiz(primaryStage, new ParseJSON("test1.json").parseFile()));
-        } catch (IOException | ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        primaryStage.setScene(initialize(primaryStage));
       }
     });
 
@@ -278,6 +264,14 @@ public class Main extends Application {
     Scene homepage = new Scene(border, 1000, 600);
     return homepage;
   }
+
+  // private Object isInt(TextField inputField, String text) {
+  // try {
+  //
+  // } catch (NumberFormatException e) {
+  //
+  // }
+  // }
 
   private Scene addQuestion(Stage primaryStage) {
 

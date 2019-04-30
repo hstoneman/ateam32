@@ -1,9 +1,11 @@
 package application;
 
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -48,10 +50,6 @@ public class ParseJSON {
       String questionText = (String) question.get("questionText"); // get the question text
       String topic = (String) question.get("topic"); // get the topic
       String imgText = (String) question.get("image"); // get the image text (may be "none")
-      Image img = null;
-      if (!imgText.equalsIgnoreCase("none")) { // if image isn't "none" make new image object
-        img = new Image((String) question.get("image"));
-      }
       JSONArray choiceArray = (JSONArray) question.get("choiceArray"); // get the choice array obj
       String[] choices = new String[choiceArray.size()];
       int correctAnswer = 0;
@@ -69,7 +67,7 @@ public class ParseJSON {
         newQuestion = new Question(metadata, questionText, topic, choices, correctAnswer);
 
       } else {
-        newQuestion = new Question(metadata, questionText, topic, img, choices, correctAnswer);
+        newQuestion = new Question(metadata, questionText, topic, imgText, choices, correctAnswer);
       }
       questions.add(newQuestion); // add new question to the array of questions to be returned
     }
@@ -88,6 +86,7 @@ public class ParseJSON {
         topics.add(questions.get(i).getTopic());
       }
     }
+    Collections.sort(topics);
     return topics;
   }
 }
