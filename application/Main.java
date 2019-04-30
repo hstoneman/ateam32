@@ -37,6 +37,7 @@ public class Main extends Application {
   VBox questionButtonBox;
   Button nextQuestion;
   ImageView view;
+  Stage primaryStage;
 
   private Scene initialize(Stage primaryStage) {
     BorderPane root = new BorderPane();
@@ -146,42 +147,79 @@ public class Main extends Application {
     Text loadQ = new Text("Load Question JSON File");
     vBox1.getChildren().add(loadQ);
 
+    HBox hBox1 = new HBox();
     // Create TextField to get the path for the JSON file.
     TextField textField = new TextField("Enter JSon file path");
-    vBox2.getChildren().add(textField);
+    hBox1.getChildren().add(textField);
+    Button enter = new Button("Enter");
+    hBox1.getChildren().add(enter);
+    vBox2.getChildren().add(hBox1);
 
     // Creates a new question collection with the file entered.
     // textField.setOnAction(e -> String filePath = textField.getText());
 
-    String filePath = textField.getText();
-    QuestionCollection qc = new QuestionCollection(filePath);
-    qc.parser.parseFile();
-
-    // Populates test values for Choices
     ArrayList<String> qTopics = new ArrayList<String>();
-    qTopics.add(0, "<Select>");
-    qTopics = qc.getTopics();
-
-
     // Create instance of a combo box and ArrayList of strings for the choices.
     ArrayList<String> choice = new ArrayList<String>();
     Label selected = new Label();
-
     ComboBox<String> topics = new ComboBox<String>(FXCollections.observableArrayList(qTopics));
-    // Add a listener that detects changes in value and adds them to the choices in topics.
-    topics.valueProperty().addListener(new ChangeListener<String>() {
-      @SuppressWarnings("rawtypes")
+
+    enter.setOnAction(new EventHandler<ActionEvent>() {
       @Override
-      public void changed(ObservableValue ov, String t, String t1) {
-        if (!choice.contains(t1)) {
-          choice.add(t1);
-          selected.setText("Topics selected: " + choice.toString());
-        } else {
-          choice.remove(t1);
-          selected.setText("Topics selected: " + choice.toString());
+      public void handle(ActionEvent event) {
+        try {
+          String filePath = textField.getText();
+          QuestionCollection qc = new QuestionCollection(filePath);
+          qc.buildQuestionCollection();
+          // Populates test values for Choices
+          choice.clear();
+          qTopics.clear();
+          qTopics.add(0, "<Select>");
+          qTopics.addAll(qc.getTopics());
+        } catch (FileNotFoundException fnf) {
+          textField.setText("File not found");
+        } catch (IOException e) {
+          textField.setText("Unknown Error Occurred");
+        } catch (ParseException e) {
+          textField.setText("Unable to Parse file.");
+        } finally {
+          // Add a listener that detects changes in value and adds them to the choices in topics.
+          topics.setItems(FXCollections.observableArrayList(qTopics));
+          topics.valueProperty().addListener(new ChangeListener<String>() {
+            @SuppressWarnings("rawtypes")
+            @Override
+            public void changed(ObservableValue ov, String t, String t1) {
+              if (!choice.contains(t1)) {
+                choice.add(t1);
+                selected.setText("Topics selected: " + choice.toString());
+              } else {
+                choice.remove(t1);
+                selected.setText("Topics selected: " + choice.toString());
+              }
+            }
+          });
         }
       }
     });
+
+
+
+    //
+    // ComboBox<String> topics = new ComboBox<String>(FXCollections.observableArrayList(qTopics));
+    // // Add a listener that detects changes in value and adds them to the choices in topics.
+    // topics.valueProperty().addListener(new ChangeListener<String>() {
+    // @SuppressWarnings("rawtypes")
+    // @Override
+    // public void changed(ObservableValue ov, String t, String t1) {
+    // if (!choice.contains(t1)) {
+    // choice.add(t1);
+    // selected.setText("Topics selected: " + choice.toString());
+    // } else {
+    // choice.remove(t1);
+    // selected.setText("Topics selected: " + choice.toString());
+    // }
+    // }
+    // });
 
     topics.setValue("<Select>");
 
@@ -203,7 +241,7 @@ public class Main extends Application {
       @Override
       public void handle(ActionEvent event) {
         choice.clear();
-        selected.setText(choice.toString());
+        selected.setText("Topics selected: " + choice.toString());
       }
     });
 
@@ -227,7 +265,7 @@ public class Main extends Application {
 
     Text numQuestionPrompt = new Text("Enter number of questions to use: ");
     TextField numQ = new TextField();
-    // numQ.setOnAction(e -> isInt(numQ, numQ.getText()));
+    numQ.setOnAction(e -> isInt(numQ, numQ.getText()));
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
 
@@ -265,13 +303,15 @@ public class Main extends Application {
     return homepage;
   }
 
-  // private Object isInt(TextField inputField, String text) {
-  // try {
-  //
-  // } catch (NumberFormatException e) {
-  //
-  // }
-  // }
+  private boolean isInt(TextField inputField, String text) {
+    try {
+      int number = Integer.parseInt(text);
+      return true;
+    } catch (NumberFormatException e) {
+      inputField.setText("Enter a number!");
+      return false;
+    }
+  }
 
   private Scene addQuestion(Stage primaryStage) {
 
