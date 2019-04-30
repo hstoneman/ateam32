@@ -370,11 +370,19 @@ public class Main extends Application {
     scene.getStylesheets().add("application.css");
     return scene;
   }
-
+  
+  boolean quitting = false;
+  
   @Override
   public void start(Stage primaryStage) throws Exception {
-
     homepage(primaryStage);
+    primaryStage.setOnCloseRequest(event -> {
+        QuitWindow.initializeQuitWindow(primaryStage); 
+        if(!quitting) {
+            event.consume();
+            quitting = true;
+        }
+    });
     primaryStage.setTitle("Quiz Generator - A Team 32");
     primaryStage.show();
 
@@ -383,6 +391,7 @@ public class Main extends Application {
   public static void main(String[] args) {
     launch(args);
   }
+
 
 }
 
