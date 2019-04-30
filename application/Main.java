@@ -3,7 +3,6 @@ package application;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.json.simple.parser.ParseException;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -43,7 +42,7 @@ public class Main extends Application {
   Label correctDisplay;
   int correctAnswers = 0;
   
-  private Scene initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
+  private void initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
     correctAnswers = curQuestion = 0;
     this.questions = questions;
     BorderPane root = new BorderPane();
@@ -51,7 +50,6 @@ public class Main extends Application {
 
     VBox labelPair = new VBox();
 
-    // these labels will become private fields that will later be updated
     quizNo = new Label("Question " + "/" + questions.size());
     correctDisplay = new Label("not initialized!");
     questionLabel = new Label("Question not initialized!");
@@ -66,7 +64,7 @@ public class Main extends Application {
     nextQuestion = new Button("Next Question!");
     nextQuestion.setOnAction((ActionEvent event) -> {
         if(curQuestion < questions.size()) setQuestion(questions.get(curQuestion));
-        else System.out.println("Max questions!");
+        else initializeFinalWindow(primaryStage);
     });
     nextQuestion.setVisible(false);
     root.setBottom(nextQuestion);
@@ -89,9 +87,38 @@ public class Main extends Application {
     Scene scene = new Scene(root, 1000, 600);
     scene.getStylesheets().add("application/test.css");
     setQuestion(questions.get(0));
-    return scene;
+    primaryStage.setScene(scene);
   }
 
+  private void initializeFinalWindow(Stage primaryStage) {
+      BorderPane root = new BorderPane();
+      Label congrats = new Label("Congratulations! You have completed the quiz");
+      root.setTop(congrats);
+      VBox statsBox = new VBox();
+      Label questionsAttempted = new Label("Questions attempted: " + curQuestion);
+      Label corrAnsLabel = new Label("Correct Answers: " + correctAnswers);
+      Label percentage = new Label("Percentage: " + (float)correctAnswers * 100 / questions.size() + "%");
+      congrats.setStyle("-fx-font-size: 24px;");
+      corrAnsLabel.setStyle("-fx-font-size: 20px;");
+      percentage.setStyle("-fx-font-size: 20px;");
+      questionsAttempted.setStyle("-fx-font-size: 20px;");
+      Button but = new Button("Back to main menu");
+      but.setOnAction((ActionEvent event) -> {
+          try {
+              homepage(primaryStage);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }});
+      statsBox.getChildren().addAll(questionsAttempted, corrAnsLabel, percentage);
+      root.setCenter(statsBox);
+      statsBox.setAlignment(Pos.CENTER);
+      BorderPane.setAlignment(congrats, Pos.TOP_CENTER);
+      root.setBottom(but);
+      BorderPane.setAlignment(but, Pos.BOTTOM_CENTER);
+      primaryStage.setScene(new Scene(root, 1000, 600));
+  }
+  
   void setQuestion(Question question) {
     curQuestion++;
     quizNo.setText("Question " + curQuestion + "/" + questions.size());
@@ -139,7 +166,7 @@ public class Main extends Application {
     }
   }
 
-  private Scene homepage(Stage primaryStage) throws Exception {
+  private void homepage(Stage primaryStage) throws Exception {
 
     // Declare BorderPane
     BorderPane border = new BorderPane();
@@ -240,19 +267,13 @@ public class Main extends Application {
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
 
-    try {
-      Integer numQuestions = Integer.parseInt(numQ.getText());
-    } catch (Exception E) {
-
-    }
-
     // Start Button to start the quiz
     Button start = new Button("StartQuiz");
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
         try {
-            primaryStage.setScene(initializeQuiz(primaryStage, new ParseJSON("test1.json").parseFile()));
+            initializeQuiz(primaryStage, new ParseJSON("test.json").parseFile());
         } catch (IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -276,7 +297,7 @@ public class Main extends Application {
 
 
     Scene homepage = new Scene(border, 1000, 600);
-    return homepage;
+    primaryStage.setScene(homepage);
   }
 
   private Scene addQuestion(Stage primaryStage) {
@@ -335,7 +356,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
 
-    primaryStage.setScene(homepage(primaryStage));
+    homepage(primaryStage);
     primaryStage.setTitle("Quiz Generator - A Team 32");
     primaryStage.show();
 
