@@ -25,6 +25,7 @@ public class QuestionCollection implements CollectionADT{
   public ParseJSON parser;
   private ArrayList<Question> topicQuestions;
   private ArrayList<Question> randomQuestions;
+  private Random rng;
   
   /**
    * constructor to initialize all fields
@@ -36,6 +37,7 @@ public class QuestionCollection implements CollectionADT{
     topics = new ArrayList<String>();
     topicQuestions = new ArrayList<Question>();
     randomQuestions = new ArrayList<Question>();
+    rng = new Random();
   }
   
   /**
@@ -92,7 +94,6 @@ public class QuestionCollection implements CollectionADT{
 		  randomQuestions.addAll(questions);
 		  return;
 	  }
-	  Random rng = new Random();
 	  for (int i = 0; i < n; i++) {
 		  int index = rng.nextInt(topicQuestions.size());
 		  Question q = topicQuestions.get(index);
