@@ -18,7 +18,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -151,6 +153,23 @@ public class Main extends Application {
       but.setMinWidth(300);
       but.setStyle("-fx-background-color: cyan;");
       but.setAlignment(Pos.BASELINE_LEFT);
+      DropShadow shadow = new DropShadow();
+      but.addEventHandler(MouseEvent.MOUSE_ENTERED, 
+              new EventHandler<MouseEvent>() {
+                  @Override
+                  public void handle(MouseEvent e) {
+                      but.setEffect(shadow);
+                  }
+              }
+      );
+      but.addEventHandler(MouseEvent.MOUSE_EXITED, 
+              new EventHandler<MouseEvent>() {
+                  @Override
+                  public void handle(MouseEvent e) {
+                      but.setEffect(null);
+                  }
+              }
+      );
       but.setOnAction(correctAnswer ? (ActionEvent event) -> {
         but.setStyle("-fx-background-color: lime;" + "-fx-text-fill: white;");
         but.setText("Correct!");
