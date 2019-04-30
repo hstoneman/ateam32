@@ -40,9 +40,11 @@ public class Main extends Application {
   int curQuestion = 0;
   ArrayList<Question> questions;
   Label quizNo;
+  Label correctDisplay;
   int correctAnswers = 0;
   
   private Scene initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
+    correctAnswers = curQuestion = 0;
     this.questions = questions;
     BorderPane root = new BorderPane();
     root.getStyleClass().add("body-screen");
@@ -51,12 +53,14 @@ public class Main extends Application {
 
     // these labels will become private fields that will later be updated
     quizNo = new Label("Question " + "/" + questions.size());
+    correctDisplay = new Label("not initialized!");
     questionLabel = new Label("Question not initialized!");
+    questionLabel.setWrapText(true);
 
-    labelPair.getChildren().addAll(quizNo, questionLabel);
+    labelPair.getChildren().addAll(quizNo, questionLabel, correctDisplay);
     quizNo.getStyleClass().add("quiz-text");
     questionLabel.getStyleClass().add("quiz-questiontext");
-
+    correctDisplay.getStyleClass().add("quiz-questiontext");
     root.setTop(labelPair);
 
     nextQuestion = new Button("Next Question!");
@@ -91,6 +95,7 @@ public class Main extends Application {
   void setQuestion(Question question) {
     curQuestion++;
     quizNo.setText("Question " + curQuestion + "/" + questions.size());
+    correctDisplay.setText("Questions answered correctly: " + correctAnswers);
     nextQuestion.setVisible(false);
     questionLabel.setText(question.getQuestionText());
     questionButtonBox.getChildren().clear();
@@ -124,6 +129,7 @@ public class Main extends Application {
         but.setText("Correct!");
         view.setVisible(true);
         correctAnswers++;
+        correctDisplay.setText("Questions answered correctly: " + correctAnswers);
       } : (ActionEvent event) -> {
         but.setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
         but.setText("Incorrect!");
@@ -246,7 +252,7 @@ public class Main extends Application {
       @Override
       public void handle(ActionEvent event) {
         try {
-            primaryStage.setScene(initializeQuiz(primaryStage, new ParseJSON("test.json").parseFile()));
+            primaryStage.setScene(initializeQuiz(primaryStage, new ParseJSON("test1.json").parseFile()));
         } catch (IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
