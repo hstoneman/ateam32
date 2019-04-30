@@ -88,6 +88,10 @@ public class QuestionCollection implements CollectionADT{
    * @param n is the number of questions to pick
    */
   public void randomSelection(int n) {
+	  if (n > topics.size()) {
+		  randomQuestions.addAll(questions);
+		  return;
+	  }
 	  Random rng = new Random();
 	  for (int i = 0; i < n; i++) {
 		  int index = rng.nextInt(topicQuestions.size());
