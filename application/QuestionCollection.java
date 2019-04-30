@@ -197,4 +197,17 @@ public class QuestionCollection implements CollectionADT{
   public int getTotalNumberQuestions() {
     return questions.size();
   }
+  
+  /**
+   * Adds new question to the collection from a json file
+   * @throws ParseException 
+   * @throws IOException 
+   * @throws FileNotFoundException 
+   */
+  public void addQuestionsFromJSON(String filepath) throws FileNotFoundException, IOException, ParseException {
+	  parser = new ParseJSON(filepath);
+	  ArrayList<Question> new_questions = parser.parseFile();
+	  questions.addAll(new_questions);
+	  topics = parser.getTopicList(questions);
+  }
 }
