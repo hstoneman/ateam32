@@ -79,10 +79,12 @@ public class QuestionCollection implements CollectionADT{
    * @param topics
    */
   public void buildQuizQuestions(ArrayList<String> topics) {
+    System.out.println("Getting questions of topic(s): " + topics.toString());
     for (int i = 0; i < topics.size(); i++) {
       ArrayList<Question> possibleQuestions = getQuestionsByTopic(topics.get(i));
       topicQuestions.addAll(possibleQuestions);
     }
+    System.out.println("Found " + topicQuestions.size() + " questions");
   }
   
   /**
@@ -90,8 +92,8 @@ public class QuestionCollection implements CollectionADT{
    * @param n is the number of questions to pick
    */
   public void randomSelection(int n) {
-	  if (n >= topics.size()) { // Returns all of the questions if the number desired is greater than the topic list size
-		  randomQuestions.addAll(questions);
+	  if (n >= topicQuestions.size()) { // Returns all of the questions if the number desired is greater than the topic list size
+		  randomQuestions.addAll(topicQuestions);
 		  return;
 	  }
 	  ArrayList<Integer> current_questions = new ArrayList<Integer>();
@@ -154,7 +156,7 @@ public class QuestionCollection implements CollectionADT{
    * @return
    */
   @SuppressWarnings("unchecked")
-  private JSONObject toJSONString(Question q) {
+  public JSONObject toJSONString(Question q) {
     JSONObject question = new JSONObject();
     question.put("meta-data", q.getMetaData());
     question.put("questionText", q.getQuestionText());

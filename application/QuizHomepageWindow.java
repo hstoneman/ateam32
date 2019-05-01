@@ -147,12 +147,6 @@ public class QuizHomepageWindow {
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
 
-    //
-    // try {
-    // Integer numQuestions = Integer.parseInt(numQ.getText());
-    // } catch (Exception E) {
-    //
-    // }
 
     // Start Button to start the quiz
     Button start = new Button("StartQuiz");
@@ -160,7 +154,6 @@ public class QuizHomepageWindow {
       @Override
       public void handle(ActionEvent event) {
         buildQuiz();
-        qc.buildQuizQuestions(qTopics);
         QuizMainWindow.initializeQuiz(primaryStage, qc.getRandomQuestions());
       }
     });
@@ -198,7 +191,6 @@ public class QuizHomepageWindow {
   }
 
   private static void buildQuiz() {
-    System.out.println(qc.getTopics().size());
     try {
       qc.buildQuestionCollection();
     } catch (FileNotFoundException e) {
@@ -215,7 +207,5 @@ public class QuizHomepageWindow {
     }
     qc.buildQuizQuestions(userTopics);
     qc.randomSelection(numberQ);
-    System.out.println("Quiz has been built");
-
   }
 }
