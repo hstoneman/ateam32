@@ -90,14 +90,18 @@ public class QuestionCollection implements CollectionADT{
    * @param n is the number of questions to pick
    */
   public void randomSelection(int n) {
-	  if (n >= topics.size()) {
+	  if (n >= topics.size()) { // Returns all of the questions if the number desired is greater than the topic list size
 		  randomQuestions.addAll(questions);
 		  return;
 	  }
+	  ArrayList<Integer> current_questions = new ArrayList<Integer>();
 	  for (int i = 0; i < n; i++) {
 		  int index = rng.nextInt(topicQuestions.size());
-		  Question q = topicQuestions.get(index);
-		  randomQuestions.add(q);
+		  if (!current_questions.contains(index)) { // Checks if the question has already been selected
+			  Question q = topicQuestions.get(index);
+			  randomQuestions.add(q);
+			  current_questions.add(index);
+		  }
 	  }
   }
   
