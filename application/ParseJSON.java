@@ -62,12 +62,9 @@ public class ParseJSON {
         }
       }
       Question newQuestion; // create new question
-      if (imgText.equalsIgnoreCase("none")) {
-        newQuestion = new Question(metadata, questionText, topic, choices, correctAnswer);
-
-      } else {
+      
         newQuestion = new Question(metadata, questionText, topic, imgText, choices, correctAnswer);
-      }
+      
       questions.add(newQuestion); // add new question to the array of questions to be returned
     }
     return questions;
