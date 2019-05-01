@@ -135,6 +135,7 @@ public class QuestionCollection implements CollectionADT{
   public void addQuestion(String metadata, String questionText, String topic, String image, String[] choiceArray, int answer) {
     Question q = new Question(metadata, questionText, topic, image, choiceArray, answer);
     questions.add(q);
+    topics.add(topic);
   }
   
   /**

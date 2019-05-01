@@ -1,5 +1,7 @@
 package application;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -7,62 +9,117 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class AddQuestionWindow {
+    
+    static int i = 0;
+    static String question;
+    static String topic;
+    static int answer;
+    static String metaData;
+    static List<String> allChoices = new ArrayList<String>();
+
     static void addQuestion(Stage primaryStage) {
 
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(0, 10, 0, 10));
-        VBox col1 = new VBox();
-        VBox col2 = new VBox();
+        try {
+            // Layout Panes
+            GridPane grid = new GridPane();
+            grid.setStyle("-fx-background-color: #FAF0E6");
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(0, 10, 0, 10));
+            VBox col1 = new VBox();
+            VBox col2 = new VBox();
 
-        // Labels
-        Label label1 = new Label("Adding to the Question Bank");
-        label1.setStyle("-fx-font-weight: bold");
-        Label label2 = new Label("Question text");
-        Label label3 = new Label("Topic");
-        Label label4 = new Label("Image if desired");
-        Label label5 = new Label("Question answer");
-        Label label6 = new Label("Question choices");
+            // Labels
+            Label label1 = new Label("Adding to the Question Bank");
+            label1.setStyle("-fx-font-weight: bold");
+            Label label2 = new Label("Question text");
+            Label label3 = new Label("Topic");
+            Label label4 = new Label("Image if desired");
+            Label label5 = new Label("Question answer index (first choice is index 1)");
+            Label label6 = new Label("Question choices");
+            Label label7 = new Label("Meta-data");
 
-        // Buttons
-        Button choice = new Button("ADD CHOICE");
-        Button submit = new Button("SUBMIT");
-        submit.setStyle("-fx-background-color: #C9EEFF");
+            // Buttons
+            Button choice = new Button("ADD CHOICE");
+            Button submit = new Button("SUBMIT");
+            submit.setStyle("-fx-background-color: linear-gradient(#f0ff35, #a9ff00),\r\n"
+                    + "radial-gradient(center 50% -40%, radius 200%, #b8ee36 45%, #80c800 50%)");
 
-        // Text fields
-        TextField textField1 = new TextField("Question Text");
-        TextField textField2 = new TextField("Topic");
-        TextField textField3 = new TextField("File Path");
-        TextField textField4 = new TextField("Answer");
-        TextField textField5 = new TextField("Choice Text");
+            // Text fields
+            TextField questionField = new TextField("Question Text");
+            TextField topicField = new TextField("Topic");
+            TextField pathField = new TextField("File Path");
+            TextField ansField = new TextField("Answer");
+            TextField textField[] = new TextField[4];
+            TextField metaDataField = new TextField("Meta-data");
+            textField[0] = new TextField("Choice Text");
 
-        // vBox spacing and adding nodes
-        col1.setSpacing(20);
-        col2.setSpacing(10);
-        ObservableList<Node> list1 = col1.getChildren();
-        list1.addAll(label2, label3, label4, label5, label6);
-        ObservableList<Node> list2 = col2.getChildren();
-        list2.addAll(textField1, textField2, textField3, textField4, textField5, choice, submit);
+            // vBox spacing and adding nodes
+            col1.setSpacing(20);
+            col2.setSpacing(10);
+            ObservableList<Node> list1 = col1.getChildren();
+            list1.addAll(label2, label3, label4, label5, label7, label6);
+            ObservableList<Node> list2 = col2.getChildren();
+            list2.addAll(questionField, topicField, pathField, ansField, metaDataField, textField[0]);
 
-        // Grid pane setting
-        grid.add(label1, 0, 0);
-        grid.add(col1, 0, 1);
-        grid.add(col2, 1, 1);
+            // Grid pane setting
+            grid.add(label1, 0, 0);
+            grid.add(col1, 0, 1);
+            grid.add(col2, 1, 1);
+            grid.add(choice, 1, 8);
+            grid.add(submit, 1, 9);
 
-        // BorderPane setting
-        BorderPane border = new BorderPane();
-        border.setCenter(grid);
+            // Data collection
+            choice.setOnAction(e -> {
+                if (i < 4) {
+                    textField[i] = new TextField("Choice Text");
+                    grid.add(textField[i], 1, i + 2);
+                    i = i + 1;
+                }
 
-        // Scene setting
-        Scene scene = new Scene(border, 1000, 600);
-        scene.getStylesheets().add("application.css");
-        primaryStage.setScene(scene);
-      }
+            });
+            
+            submit.setOnAction(e -> {
+                if (!questionField.getText().equals("Question Text"))
+                question = questionField.getText();
+                if (!topicField.getText().equals("Topic"))
+                topic = topicField.getText();
+                if (!ansField.getText().equals("Answer"))
+                answer = Integer.parseInt(ansField.getText()) - 1;
+                for (int cnt = 0; cnt < i; cnt++) {
+                    String tmp = textField[cnt].getText();
+                    if (!tmp.equals("Choice Text"))
+                        allChoices.add(tmp);
+                }
+                if(!metaDataField.getText().equals("Meta-data")) {
+                    metaData = metaDataField.getText();
+                }
+                String[] allChoicesArray = new String[allChoices.size()];
+                if(QuizHomepageWindow.qc == null) {
+                    QuizHomepageWindow.qc = new QuestionCollection(null);
+                }
+                QuizHomepageWindow.qc.addQuestion(metaData, question, topic, pathField.getText(), allChoices.toArray(allChoicesArray), answer);
+                try {
+                    QuizHomepageWindow.homepage(primaryStage);
+                } catch (Exception e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            });
+            
+            // Scene setting
+            Scene scene = new Scene(grid, 540, 650);
+            primaryStage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

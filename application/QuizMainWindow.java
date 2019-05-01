@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+
 /**
  * Main window for the quiz
  * @author Anand K Madathil
@@ -133,7 +134,7 @@ public class QuizMainWindow {
           } catch(IllegalArgumentException e) { // file URL not found
               view.setAccessibleText("Image URL not found!");
           }
-      }
+      } else view.setImage(null);
     }
 
     /**

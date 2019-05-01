@@ -28,6 +28,7 @@ public class QuizHomepageWindow {
   static ArrayList<String> userTopics;
 
   static void homepage(Stage primaryStage) throws Exception {
+      
     // Declare BorderPane
     BorderPane border = new BorderPane();
     // Declare GridPane
@@ -43,7 +44,7 @@ public class QuizHomepageWindow {
 
     HBox hBox1 = new HBox();
     // Create TextField to get the path for the JSON file.
-    TextField textField = new TextField("Enter JSon file path");
+    TextField textField = new TextField("Enter JSON file path");
     hBox1.getChildren().add(textField);
     Button enter = new Button("Load");
     hBox1.getChildren().add(enter);
@@ -51,17 +52,17 @@ public class QuizHomepageWindow {
 
     // Creates a new question collection with the file entered.
 
-    ArrayList<String> qTopics = new ArrayList<String>();
+    ArrayList<String> qTopics = qc == null ?  new ArrayList<String>() : qc.getTopics();
     Label selected = new Label();
     ComboBox<String> topics = new ComboBox<String>(FXCollections.observableArrayList(qTopics));
-
+    if(qc != null) System.out.println(qc.getTopics());
     Label totalQs = new Label("Total number of questions: (No question file given)");
     enter.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
         try {
           String filePath = textField.getText();
-          qc = new QuestionCollection(filePath);
+          if(qc == null) qc = new QuestionCollection(filePath);
           qc.buildQuestionCollection();
           // Populates test values for Choices
           userTopics = new ArrayList<String>();
@@ -127,7 +128,7 @@ public class QuizHomepageWindow {
     addQ.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        // primaryStage.setScene(addQuestion(primaryStage));
+        AddQuestionWindow.addQuestion(primaryStage);
       }
     });
 
