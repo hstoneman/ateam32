@@ -107,16 +107,14 @@ public class QuizHomepageWindow {
     vBox2.getChildren().add(topics);
 
     // Label to show topics selected
-    choice.clear();
-    // selected.property
 
     // Refresh button to refresh output
     Button clear = new Button("Clear Topics");
     clear.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
-        choice.clear();
-        selected.setText("Topics selected: " + choice.toString());
+        userTopics.clear();
+        selected.setText("Topics selected: " + userTopics.toString());
       }
     });
 
