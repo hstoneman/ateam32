@@ -100,7 +100,10 @@ public class QuizMainWindow {
       Scene scene = new Scene(root, 1000, 600);
       scene.getStylesheets().add("application/test.css");
       if(questions.size() > 0) setQuestion(questions.get(0));
-      else QuizFinalWindow.initializeFinalWindow(primaryStage, 0, 0, 0);
+      else {
+          QuizFinalWindow.initializeFinalWindow(primaryStage, 0, 0, 0);
+          return;
+      }
       primaryStage.setScene(scene);
     }
     
@@ -124,7 +127,7 @@ public class QuizMainWindow {
         questionButtonBox.getChildren().add(new ButtonPair((char) ('A' + i) + "", nextQuestion,
                 question.getChoices()[i], i == question.getAnswer()).box);
       }
-      if(!question.getImage().equals("none")) {
+      if(question.getImage() != null && !question.getImage().equals("none")) {
           try {
               view.setImage(new Image(question.getImage()));
           } catch(IllegalArgumentException e) { // file URL not found
