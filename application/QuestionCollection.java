@@ -97,7 +97,7 @@ public class QuestionCollection implements CollectionADT{
 		  return;
 	  }
 	  ArrayList<Integer> current_questions = new ArrayList<Integer>();
-	  for (int i = 0; i < n; i++) {
+	  while (current_questions.size() != n) {
 		  int index = rng.nextInt(topicQuestions.size());
 		  if (!current_questions.contains(index)) { // Checks if the question has already been selected
 			  Question q = topicQuestions.get(index);

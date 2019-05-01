@@ -82,7 +82,7 @@ public class QuizHomepageWindow {
             @SuppressWarnings("rawtypes")
             @Override
             public void changed(ObservableValue ov, String t, String t1) {
-              if (!choice.contains(t1)) {
+              if (!userTopics.contains(t1)) {
                 userTopics.add(t1);
                 selected.setText("Topics selected: " + userTopics.toString());
               } else {
