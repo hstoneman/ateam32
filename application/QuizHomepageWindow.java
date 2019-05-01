@@ -52,11 +52,10 @@ public class QuizHomepageWindow {
     // Creates a new question collection with the file entered.
 
     ArrayList<String> qTopics = new ArrayList<String>();
-    // Create instance of a combo box and ArrayList of strings for the choices.
-    ArrayList<String> choice = new ArrayList<String>();
     Label selected = new Label();
     ComboBox<String> topics = new ComboBox<String>(FXCollections.observableArrayList(qTopics));
 
+    Label totalQs = new Label("Total number of questions: (No question file given)");
     enter.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
@@ -69,6 +68,7 @@ public class QuizHomepageWindow {
           qTopics.clear();
           qTopics.add(0, "<Select>");
           qTopics.addAll(qc.getTopics());
+          totalQs.setText("Total number of questions: " + qc.getTotalNumberQuestions());
         } catch (FileNotFoundException fnf) {
           textField.setText("File not found");
         } catch (IOException e) {
@@ -145,7 +145,7 @@ public class QuizHomepageWindow {
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
 
-
+    vBox1.getChildren().add(totalQs);
     // Start Button to start the quiz
     Button start = new Button("StartQuiz");
     start.setOnAction(new EventHandler<ActionEvent>() {

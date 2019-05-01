@@ -1,5 +1,6 @@
 package application;
 
+import java.io.IOException;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -22,6 +23,16 @@ public class QuitWindow {
         buttonBox.setSpacing(20);
         buttonBox.setAlignment(Pos.CENTER);
         Button but1 = new Button("Save");
+        but1.setOnAction(event -> {
+            if(QuizHomepageWindow.qc != null) {
+                try {
+                    QuizHomepageWindow.qc.writeToJSON();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                primaryStage.close(); // close primary stage
+            }
+        });
         Button but2 = new Button("Exit without save");
         but2.setOnAction(event -> {
             primaryStage.close();
