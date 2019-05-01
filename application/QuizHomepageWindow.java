@@ -26,7 +26,7 @@ public class QuizHomepageWindow {
   static int numberQ;
   static String filepath;
   static ArrayList<String> userTopics;
-  
+
   static void homepage(Stage primaryStage) throws Exception {
     // Declare BorderPane
     BorderPane border = new BorderPane();
@@ -140,7 +140,10 @@ public class QuizHomepageWindow {
 
     Text numQuestionPrompt = new Text("Enter number of questions to use: ");
     TextField numQ = new TextField();
-    numQ.setOnAction(e -> isInt(numQ, numQ.getText()));
+    numQ.setOnAction(e -> {
+      if (isInt(numQ, numQ.getText()))
+        numberQ = Integer.parseInt(numQ.getText());
+    });
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
 
@@ -156,6 +159,7 @@ public class QuizHomepageWindow {
     start.setOnAction(new EventHandler<ActionEvent>() {
       @Override
       public void handle(ActionEvent event) {
+        buildQuiz();
         qc.buildQuizQuestions(qTopics);
         QuizMainWindow.initializeQuiz(primaryStage, qc.getRandomQuestions());
       }
@@ -181,9 +185,8 @@ public class QuizHomepageWindow {
   }
 
   private static boolean isInt(TextField inputField, String text) {
-    buildQuiz();
     try {
-      numberQ = Integer.parseInt(text);
+      Integer.parseInt(text);
       return true;
     } catch (NumberFormatException e) {
       inputField.setText("Enter a number!");
@@ -195,8 +198,7 @@ public class QuizHomepageWindow {
   }
 
   private static void buildQuiz() {
-    
-    qc = new QuestionCollection(filepath);
+    System.out.println(qc.getTopics().size());
     try {
       qc.buildQuestionCollection();
     } catch (FileNotFoundException e) {
@@ -208,10 +210,12 @@ public class QuizHomepageWindow {
     } catch (ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+    } catch (Exception e) {
+
     }
     qc.buildQuizQuestions(userTopics);
     qc.randomSelection(numberQ);
     System.out.println("Quiz has been built");
-    
+
   }
 }
