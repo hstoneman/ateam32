@@ -18,15 +18,20 @@ import javafx.stage.Stage;
 
 public class AddQuestionWindow {
     
-    static int i = 0;
+    static int i;
     static String question;
     static String topic;
     static int answer;
     static String metaData;
-    static List<String> allChoices = new ArrayList<String>();
+    static List<String> allChoices;
 
     static void addQuestion(Stage primaryStage) {
-
+        i = 1;
+        question = null;
+        topic = null;
+        answer = 0;
+        metaData = null;
+        allChoices = new ArrayList<String>();
         try {
             // Layout Panes
             GridPane grid = new GridPane();
@@ -58,7 +63,7 @@ public class AddQuestionWindow {
             TextField topicField = new TextField("Topic");
             TextField pathField = new TextField("File Path");
             TextField ansField = new TextField("Answer");
-            TextField textField[] = new TextField[4];
+            TextField textField[] = new TextField[5];
             TextField metaDataField = new TextField("Meta-data");
             textField[0] = new TextField("Choice Text");
 
@@ -79,10 +84,10 @@ public class AddQuestionWindow {
 
             // Data collection
             choice.setOnAction(e -> {
-                if (i < 4) {
+                if (i <= 4) {
                     textField[i] = new TextField("Choice Text");
                     grid.add(textField[i], 1, i + 2);
-                    i = i + 1;
+                    i++;
                 }
 
             });

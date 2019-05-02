@@ -72,7 +72,7 @@ public class QuizMainWindow {
       nextQuestion = new Button("Next Question!");
       nextQuestion.setOnAction((ActionEvent event) -> {
           if(curQuestion < questions.size()) {
-              if(curQuestion == questions.size() - 1) nextQuestion.setText("Complete Quiz!");
+              if(curQuestion == questions.size() - 1 || questions.size() == 1) nextQuestion.setText("Complete Quiz!");
               setQuestion(questions.get(curQuestion));
           }
           else QuizFinalWindow.initializeFinalWindow(primaryStage, curQuestion, correctAnswers, questions.size());
