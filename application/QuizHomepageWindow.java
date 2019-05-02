@@ -7,11 +7,13 @@ import org.json.simple.parser.ParseException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -25,10 +27,14 @@ public class QuizHomepageWindow {
   static QuestionCollection qc;
   static int numberQ;
   static String filepath;
-  static ArrayList<String> userTopics;
-
+  static ArrayList<String> topics;
+  static Label topicsLabel;
+  static TextField topicsRequested;
+  static Label topicsRequestLabel;
+  
   static void homepage(Stage primaryStage) throws Exception {
-      
+
+    if(qc == null) qc = new QuestionCollection();
     // Declare BorderPane
     BorderPane border = new BorderPane();
     // Declare GridPane
@@ -50,78 +56,20 @@ public class QuizHomepageWindow {
     hBox1.getChildren().add(enter);
     vBox2.getChildren().add(hBox1);
 
-    // Creates a new question collection with the file entered.
-
-    ArrayList<String> qTopics = qc == null ?  new ArrayList<String>() : qc.getTopics();
-    Label selected = new Label();
-    ComboBox<String> topics = new ComboBox<String>(FXCollections.observableArrayList(qTopics));
-    if(qc != null) System.out.println(qc.getTopics());
-    Label totalQs = new Label("Total number of questions: (No question file given)");
-    enter.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
+    enter.setOnAction(event -> {
         try {
-          String filePath = textField.getText();
-          if(qc == null) qc = new QuestionCollection(filePath);
-          qc.buildQuestionCollection();
-          // Populates test values for Choices
-          userTopics = new ArrayList<String>();
-          qTopics.clear();
-          qTopics.add(0, "<Select>");
-          qTopics.addAll(qc.getTopics());
-          totalQs.setText("Total number of questions: " + qc.getTotalNumberQuestions());
-        } catch (FileNotFoundException fnf) {
-          textField.setText("File not found");
-        } catch (IOException e) {
-          textField.setText("Unknown Error Occurred");
-        } catch (ParseException e) {
-          textField.setText("Unable to Parse file.");
-        } finally {
-          // Add a listener that detects changes in value and adds them to the choices in topics.
-          topics.setItems(FXCollections.observableArrayList(qTopics));
-          topics.valueProperty().addListener(new ChangeListener<String>() {
-            @SuppressWarnings("rawtypes")
-            @Override
-            public void changed(ObservableValue ov, String t, String t1) {
-              if (!userTopics.contains(t1)) {
-                userTopics.add(t1);
-                selected.setText("Topics selected: " + userTopics.toString());
-              } else {
-                userTopics.remove(t1);
-                selected.setText("Topics selected: " + userTopics.toString());
-              }
-            }
-          });
-        }
-      }
+            String filePath = textField.getText();
+            qc.addQuestionsFromJSON(filePath);
+            // Populates test values for Choices
+            UpdateTopics();
+          } catch (FileNotFoundException fnf) {
+            textField.setText("File not found");
+          } catch (IOException e) {
+            textField.setText("Unknown Error Occurred");
+          } catch (ParseException e) {
+            textField.setText("Unable to Parse file.");
+          }
     });
-
-
-    topics.setValue("<Select>");
-
-    // Adds the text for the ComboBox
-    Text selectTopics = new Text(
-        "Select topics you want in your quiz from the dropdown. \nSelect again to remove.");
-    // Add the comboBox and text to the grid.
-
-    vBox1.getChildren().add(selectTopics);
-    vBox2.getChildren().add(topics);
-
-    // Label to show topics selected
-
-    // Refresh button to refresh output
-    Button clear = new Button("Clear Topics");
-    clear.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        userTopics.clear();
-        selected.setText("Topics selected: " + userTopics.toString());
-      }
-    });
-
-    // Display choices taken.
-    vBox1.getChildren().add(selected);
-    vBox2.getChildren().add(clear);
 
     // Instance of button to add Question. Sets new scene when clicked.
     Button addQ = new Button("Add Question");
@@ -145,8 +93,20 @@ public class QuizHomepageWindow {
     });
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
-
-    vBox1.getChildren().add(totalQs);
+    
+    topicsRequestLabel = new Label("\nEnter the topics you want to use by entering their numbers (Space separated):");
+    topicsRequested = new TextField();
+    vBox1.getChildren().add(topicsRequestLabel);
+    vBox2.getChildren().add(topicsRequested);
+    
+    
+    topicsLabel = new Label("Topics List: (empty)");
+    vBox1.getChildren().add(topicsLabel);
+    UpdateTopics();
+    
+    Label exampleLabel = new Label("An example to enter if displayed topics were \n(1. Apple), (2. Banana), (3. Orange) and you wanted to pick Apple and Orange: 1 3");
+    vBox1.getChildren().add(exampleLabel);
+    
     // Start Button to start the quiz
     Button start = new Button("StartQuiz");
     start.setOnAction(new EventHandler<ActionEvent>() {
@@ -188,23 +148,35 @@ public class QuizHomepageWindow {
       return false;
     }
   }
-
+  
+  private static void UpdateTopics() {
+      topics = new ArrayList<String>();
+      topics.addAll(qc.getTopics());
+      System.out.println("Current topics: " + topics.toString());
+      if(topics.size() == 0) {
+          topicsLabel.setText("Topics List: (empty)");
+          return;
+      }
+      String topicsString = "Topics List: ";
+      
+      for(int i = 0; i < topics.size(); i++) {
+          topicsString += "(" + (i + 1) + ". " + topics.get(i) + ")";
+          if(i != topics.size() - 1) topicsString += ", ";
+      }
+      topicsLabel.setText(topicsString);
+  }
+  
   private static void buildQuiz() {
+    String[] topicIndices = topicsRequested.getText().trim().split(" ");
+    ArrayList<String> selectedTopics = new ArrayList<String>();
     try {
-      qc.buildQuestionCollection();
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (Exception e) {
-
+        for(int i = 0; i < topicIndices.length; i++) {
+            selectedTopics.add(topics.get(Integer.parseInt(topicIndices[i]) - 1));
+        }
+    } catch(Exception e) {
+        topicsRequestLabel.setText("Invalid format of topic numbers given!");
     }
-    qc.buildQuizQuestions(userTopics);
+    qc.buildQuizQuestions(selectedTopics);
     qc.randomSelection(numberQ);
   }
 }

@@ -19,7 +19,7 @@ import org.json.simple.JSONObject;
  * be added to the collection. 
  *
  */
-public class QuestionCollection implements CollectionADT{
+public class QuestionCollection implements CollectionADT {
   private ArrayList<Question> questions;
   private ArrayList<String> topics;
   public ParseJSON parser;
@@ -31,24 +31,12 @@ public class QuestionCollection implements CollectionADT{
    * constructor to initialize all fields
    * @param filepath
    */
-  public QuestionCollection(String filepath) {
-    parser = new ParseJSON(filepath);
+  public QuestionCollection() {
     questions = new ArrayList<Question>();
     topics = new ArrayList<String>();
     topicQuestions = new ArrayList<Question>();
     randomQuestions = new ArrayList<Question>();
     rng = new Random();
-  }
-  
-  /**
-   * method to build the question collection by reading a file 
-   * @throws FileNotFoundException
-   * @throws IOException
-   * @throws ParseException
-   */
-  public void buildQuestionCollection() throws FileNotFoundException, IOException, ParseException {
-    questions = parser.parseFile();
-    topics = parser.getTopicList(questions);
   }
   
   /**
@@ -80,6 +68,7 @@ public class QuestionCollection implements CollectionADT{
    */
   public void buildQuizQuestions(ArrayList<String> topics) {
     System.out.println("Getting questions of topic(s): " + topics.toString());
+    topicQuestions = new ArrayList<Question>();
     for (int i = 0; i < topics.size(); i++) {
       ArrayList<Question> possibleQuestions = getQuestionsByTopic(topics.get(i));
       topicQuestions.addAll(possibleQuestions);
@@ -92,8 +81,10 @@ public class QuestionCollection implements CollectionADT{
    * @param n is the number of questions to pick
    */
   public void randomSelection(int n) {
+      randomQuestions = new ArrayList<Question>();
 	  if (n >= topicQuestions.size()) { // Returns all of the questions if the number desired is greater than the topic list size
-		  randomQuestions.addAll(topicQuestions);
+	      randomQuestions.addAll(topicQuestions);
+		  System.out.println("n greater than size of questions " + randomQuestions.size());
 		  return;
 	  }
 	  ArrayList<Integer> current_questions = new ArrayList<Integer>();
@@ -135,20 +126,7 @@ public class QuestionCollection implements CollectionADT{
   public void addQuestion(String metadata, String questionText, String topic, String image, String[] choiceArray, int answer) {
     Question q = new Question(metadata, questionText, topic, image, choiceArray, answer);
     questions.add(q);
-    topics.add(topic);
-  }
-  
-  /**
-   * method to manually add a new question to the collection without an image
-   * @param metadata
-   * @param questionText
-   * @param topic
-   * @param choiceArray
-   * @param answer
-   */
-  public void addQuestion(String metadata, String questionText, String topic, String[] choiceArray, int answer) {
-    Question q = new Question(metadata, questionText, topic, choiceArray, answer);
-    questions.add(q);
+    if(!topics.contains(topic)) topics.add(topic);
   }
   
   /**
@@ -217,6 +195,7 @@ public class QuestionCollection implements CollectionADT{
    * @throws FileNotFoundException 
    */
   public void addQuestionsFromJSON(String filepath) throws FileNotFoundException, IOException, ParseException {
+      System.out.println("Add Questions called");
 	  parser = new ParseJSON(filepath);
 	  ArrayList<Question> new_questions = parser.parseFile();
 	  questions.addAll(new_questions);

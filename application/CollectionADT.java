@@ -12,13 +12,6 @@ import org.json.simple.parser.ParseException;
  *
  */
 public interface CollectionADT {
-  /**
-   * Reads in data from JSON file in parser and creates the topic list
-   * @throws FileNotFoundException
-   * @throws IOException
-   * @throws ParseException
-   */
-  public void buildQuestionCollection() throws FileNotFoundException, IOException, ParseException;
   
   /**
    * Returns the list of topics
@@ -60,16 +53,6 @@ public interface CollectionADT {
    * @param answer
    */
   public void addQuestion(String metadata, String questionText, String topic, String image, String[] choiceArray, int answer);
-
-  /**
-   * method to add a new question to the collection with no image
-   * @param metadata
-   * @param questionText
-   * @param topic
-   * @param choiceArray
-   * @param answer
-   */
-  public void addQuestion(String metadata, String questionText, String topic, String[] choiceArray, int answer);
 
   /**
    * method to save all questions in question bank to a JSON file

@@ -93,8 +93,13 @@ public class AddQuestionWindow {
                 if (!topicField.getText().equals("Topic"))
                 topic = topicField.getText();
                 if (!ansField.getText().equals("Answer"))
-                answer = Integer.parseInt(ansField.getText()) - 1;
-                for (int cnt = 0; cnt < i; cnt++) {
+                    try {
+                        answer = Integer.parseInt(ansField.getText()) - 1;
+                    } catch(Exception e1) {
+                        label5.setText("Enter a number into that field based on the correct option number! ->");
+                        return;
+                    }
+                    for (int cnt = 0; cnt < i; cnt++) {
                     String tmp = textField[cnt].getText();
                     if (!tmp.equals("Choice Text"))
                         allChoices.add(tmp);
@@ -103,9 +108,6 @@ public class AddQuestionWindow {
                     metaData = metaDataField.getText();
                 }
                 String[] allChoicesArray = new String[allChoices.size()];
-                if(QuizHomepageWindow.qc == null) {
-                    QuizHomepageWindow.qc = new QuestionCollection(null);
-                }
                 QuizHomepageWindow.qc.addQuestion(metaData, question, topic, pathField.getText(), allChoices.toArray(allChoicesArray), answer);
                 try {
                     QuizHomepageWindow.homepage(primaryStage);
