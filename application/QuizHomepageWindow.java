@@ -31,10 +31,14 @@ public class QuizHomepageWindow {
   static Label topicsLabel;
   static TextField topicsRequested;
   static Label topicsRequestLabel;
+  static TextField numQ;
+  static Label numberQLabel;
   
   static void homepage(Stage primaryStage) throws Exception {
 
     if(qc == null) qc = new QuestionCollection();
+
+    numberQLabel = new Label("Number of questions in database: 0");
     // Declare BorderPane
     BorderPane border = new BorderPane();
     // Declare GridPane
@@ -86,11 +90,7 @@ public class QuizHomepageWindow {
     vBox2.getChildren().add(addQ);
 
     Text numQuestionPrompt = new Text("Enter number of questions to use: ");
-    TextField numQ = new TextField();
-    numQ.setOnAction(e -> {
-      if (isInt(numQ, numQ.getText()))
-        numberQ = Integer.parseInt(numQ.getText());
-    });
+    numQ = new TextField();
     vBox1.getChildren().add(numQuestionPrompt);
     vBox2.getChildren().add(numQ);
     
@@ -106,6 +106,8 @@ public class QuizHomepageWindow {
     
     Label exampleLabel = new Label("An example to enter if displayed topics were \n(1. Apple), (2. Banana), (3. Orange) and you wanted to pick Apple and Orange: 1 3");
     vBox1.getChildren().add(exampleLabel);
+    
+    vBox1.getChildren().add(numberQLabel);
     
     // Start Button to start the quiz
     Button start = new Button("StartQuiz");
@@ -150,6 +152,7 @@ public class QuizHomepageWindow {
   }
   
   private static void UpdateTopics() {
+      numberQLabel.setText("Number of questions in database: " + qc.getTotalNumberQuestions());
       topics = new ArrayList<String>();
       topics.addAll(qc.getTopics());
       System.out.println("Current topics: " + topics.toString());
@@ -167,6 +170,9 @@ public class QuizHomepageWindow {
   }
   
   private static void buildQuiz() {
+    if (isInt(numQ, numQ.getText())) {
+          numberQ = Integer.parseInt(numQ.getText());
+    }
     String[] topicIndices = topicsRequested.getText().trim().split(" ");
     ArrayList<String> selectedTopics = new ArrayList<String>();
     try {
