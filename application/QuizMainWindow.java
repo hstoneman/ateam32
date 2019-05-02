@@ -102,7 +102,7 @@ public class QuizMainWindow {
       
       // create scene, set stage scene, add first question to begin the quiz
       Scene scene = new Scene(root, 1000, 600);
-      scene.getStylesheets().add("application/test.css");
+      scene.getStylesheets().add("application/QuizMainStyles.css");
       if(questions.size() > 0) setQuestion(questions.get(0));
       else {
           QuizFinalWindow.initializeFinalWindow(primaryStage, 0, 0, 0);
