@@ -1,3 +1,6 @@
+// Team Project ATeam 32- Quiz Generator
+// Created by: Anand Madathil, Mayukh Misra, Hayley Stoneman, Jake Schraufnagel, Shalini Bare
+
 package application;
 
 import java.io.FileNotFoundException;
@@ -35,13 +38,13 @@ public interface CollectionADT {
    * returns the questions that are of the desired topic
    * @return
    */
-  public ArrayList<Question> getTopicQuestions();
+  public ArrayList<QuestionADT> getTopicQuestions();
   
   /**
    * returns the list of n questions for the quiz
    * @return
    */
-  public ArrayList<Question> getRandomQuestions();
+  public ArrayList<QuestionADT> getRandomQuestions();
   
   /**
    * method to add a new question to the collection with an image
@@ -71,4 +74,12 @@ public interface CollectionADT {
    * @return
    */
   public int getTotalNumberQuestions();
+  
+  /**
+   * Add questions via a JSON file whose filepath is passed in
+   * @param filePath path to json file
+   * @throws various exceptions based on input errors
+   */
+  public void addQuestionsFromJSON(String filepath) throws FileNotFoundException, IOException, ParseException ;
+
 }

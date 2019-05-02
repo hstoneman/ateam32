@@ -1,3 +1,6 @@
+// Team Project ATeam 32- Quiz Generator
+// Created by: Anand Madathil, Mayukh Misra, Hayley Stoneman, Jake Schraufnagel, Shalini Bare
+
 package application;
 
 import java.util.ArrayList;
@@ -16,22 +19,33 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Wrapper class for adding a question
+ * @author Anand K Madathil, Shalini Bare
+ *
+ */
 public class AddQuestionWindow {
     
-    static int i;
-    static String question;
-    static String topic;
-    static int answer;
+    static int numChoices; // current number of choices
+    static String question; // question string
+    static String topic; // topic string
+    static int answer; // answer index
     static String metaData;
-    static List<String> allChoices;
-
+    static List<String> allChoices; // holds all choices
+    
+    /**
+     * Sets the scene to add a question
+     * @param primaryStage stage to set the scene for
+     */
     static void addQuestion(Stage primaryStage) {
-        i = 1;
+        // initialize instance fields
+        numChoices = 1;
         question = null;
         topic = null;
         answer = 0;
         metaData = null;
         allChoices = new ArrayList<String>();
+        
         try {
             // Layout Panes
             GridPane grid = new GridPane();
@@ -51,7 +65,7 @@ public class AddQuestionWindow {
             Label label5 = new Label("Question answer index (first choice is index 1)");
             Label label6 = new Label("Question choices");
             Label label7 = new Label("Meta-data");
-
+            Label label8 = new Label("You must change EVERY text-field given to you\n from its default value or else\n the question won't be added!");
             // Buttons
             Button choice = new Button("ADD CHOICE");
             Button submit = new Button("SUBMIT");
@@ -77,42 +91,55 @@ public class AddQuestionWindow {
 
             // Grid pane setting
             grid.add(label1, 0, 0);
-            grid.add(col1, 0, 1);
-            grid.add(col2, 1, 1);
+            grid.add(label8, 0, 1);
+            grid.add(col1, 0, 2);
+            grid.add(col2, 1, 2);
             grid.add(choice, 1, 8);
             grid.add(submit, 1, 9);
 
             // Data collection
             choice.setOnAction(e -> {
-                if (i <= 4) {
-                    textField[i] = new TextField("Choice Text");
-                    grid.add(textField[i], 1, i + 2);
-                    i++;
+                if (numChoices <= 4) {
+                    textField[numChoices] = new TextField("Choice Text");
+                    grid.add(textField[numChoices], 1, numChoices + 2);
+                    numChoices++;
                 }
 
             });
             
             submit.setOnAction(e -> {
+                
+                // ensure each text field has a valid output, otherwise return
+                 
                 if (!questionField.getText().equals("Question Text"))
                 question = questionField.getText();
+                else return;
+                
                 if (!topicField.getText().equals("Topic"))
                 topic = topicField.getText();
+                else return;
                 if (!ansField.getText().equals("Answer"))
                     try {
                         answer = Integer.parseInt(ansField.getText()) - 1;
                     } catch(Exception e1) {
-                        label5.setText("Enter a number into that field based on the correct option number! ->");
+                        ansField.setText("Enter a valid choice index");
                         return;
                     }
-                    for (int cnt = 0; cnt < i; cnt++) {
+                else return;
+                
+                // go through choice text fields
+                for (int cnt = 0; cnt < numChoices; cnt++) {
                     String tmp = textField[cnt].getText();
                     if (!tmp.equals("Choice Text"))
                         allChoices.add(tmp);
-                }
+                    else return;
+                } 
+                
                 if(!metaDataField.getText().equals("Meta-data")) {
                     metaData = metaDataField.getText();
-                }
+                } else return;
                 String[] allChoicesArray = new String[allChoices.size()];
+                // add question
                 QuizHomepageWindow.qc.addQuestion(metaData, question, topic, pathField.getText(), allChoices.toArray(allChoicesArray), answer);
                 try {
                     QuizHomepageWindow.homepage(primaryStage);

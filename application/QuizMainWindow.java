@@ -1,3 +1,6 @@
+// Team Project ATeam 32- Quiz Generator
+// Created by: Anand Madathil, Mayukh Misra, Hayley Stoneman, Jake Schraufnagel, Shalini Bare
+
 package application;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class QuizMainWindow {
     static VBox questionButtonBox;
     static Button nextQuestion;
     static ImageView view;
-    static ArrayList<Question> questions;
+    static ArrayList<QuestionADT> questions;
     static Label quizNo;
     static Label correctDisplay;
     
@@ -47,7 +50,7 @@ public class QuizMainWindow {
      * @param primaryStage Stage to change the scene for
      * @param questions questions to use in the quiz
      */
-    static void initializeQuiz(Stage primaryStage, ArrayList<Question> questions) {
+    static void initializeQuiz(Stage primaryStage, ArrayList<QuestionADT> questions) {
       correctAnswers = curQuestion = 0;
       QuizMainWindow.questions = questions;
       BorderPane root = new BorderPane();
@@ -112,7 +115,7 @@ public class QuizMainWindow {
      * Update view to match next question
      * @param question question to update to
      */
-    static void setQuestion(Question question) {
+    static void setQuestion(QuestionADT question) {
       answered = false; // reset answered so answer buttons don't break statistics
       
       // update relevant references and variables
@@ -133,6 +136,7 @@ public class QuizMainWindow {
               view.setImage(new Image(question.getImage()));
           } catch(IllegalArgumentException e) { // file URL not found
               view.setAccessibleText("Image URL not found!");
+              System.out.println("Image URL given in question is invalid!");
           }
       } else view.setImage(null);
     }
@@ -149,11 +153,11 @@ public class QuizMainWindow {
       /**
        * Constructs the button-option square pair
        * @param optionText the option number/letter
-       * @param view the "next question" button, answer buttons make it visible
+       * @param nextQuestionButton the "next question" button, answer buttons make it visible
        * @param answerText text for the answer
        * @param correctAnswer whether this button represents the correct answer or not
        */
-      private ButtonPair(String optionText, Node view, String answerText, boolean correctAnswer) {
+      private ButtonPair(String optionText, Button nextQuestionButton, String answerText, boolean correctAnswer) {
         box = new HBox();
         box.getStyleClass().add("quiz-hbox");
         
@@ -193,18 +197,27 @@ public class QuizMainWindow {
         
         // action effect
         but.setOnAction(correctAnswer ? (ActionEvent event) -> {
+            
           // correct answer
           but.setStyle("-fx-background-color: lime;" + "-fx-text-fill: white;");
           but.setText("Correct!");
-          view.setVisible(true);
+          nextQuestionButton.setVisible(true);
           if(!answered) correctAnswers++;
           answered = true;
           correctDisplay.setText("Questions answered correctly: " + correctAnswers);
+          
+          // change button text if required
+          if(curQuestion == questions.size()) nextQuestionButton.setText("Complete Quiz!");
         } : (ActionEvent event) -> {
+            
+          // incorrect answer
           answered = true; // answered now, do not allow correctAnswers to increment
           but.setStyle("-fx-background-color: red;" + "-fx-text-fill: white;");
           but.setText("Incorrect!");
-          view.setVisible(true);
+          nextQuestionButton.setVisible(true);
+          
+          // change button text if required
+          if(curQuestion == questions.size()) nextQuestionButton.setText("Complete Quiz!");
         });
         box.getChildren().add(but);
       }

@@ -1,3 +1,6 @@
+// Team Project ATeam 32- Quiz Generator
+// Created by: Anand Madathil, Mayukh Misra, Hayley Stoneman, Jake Schraufnagel, Shalini Bare
+
 package application;
 
 
@@ -17,25 +20,27 @@ import org.json.simple.JSONObject;
  * build the overall question collection by reading the questions in a file. It also builds a 
  * collection of questions for the user based on the passed in topics desired. Questions can also
  * be added to the collection. 
+ * @author Hayley Stoneman, Jake Schraufnagel, Anand Madathil
  *
  */
 public class QuestionCollection implements CollectionADT {
-  private ArrayList<Question> questions;
-  private ArrayList<String> topics;
-  public ParseJSON parser;
-  private ArrayList<Question> topicQuestions;
-  private ArrayList<Question> randomQuestions;
-  private Random rng;
+  private ArrayList<QuestionADT> questions; // questions in database
+  private ArrayList<String> topics; // topics in database
+  public ParseJSON parser; // parser to create questions
+  private ArrayList<QuestionADT> topicQuestions; // questions by topics selected
+  private ArrayList<QuestionADT> randomQuestions; // holds random selection of questions
+  private Random rng; // generates random numbers
   
   /**
    * constructor to initialize all fields
    * @param filepath
    */
   public QuestionCollection() {
-    questions = new ArrayList<Question>();
+    // initialize instance fields
+    questions = new ArrayList<QuestionADT>();
     topics = new ArrayList<String>();
-    topicQuestions = new ArrayList<Question>();
-    randomQuestions = new ArrayList<Question>();
+    topicQuestions = new ArrayList<QuestionADT>();
+    randomQuestions = new ArrayList<QuestionADT>();
     rng = new Random();
   }
   
@@ -52,8 +57,8 @@ public class QuestionCollection implements CollectionADT {
    * @param topic
    * @return
    */
-  private ArrayList<Question> getQuestionsByTopic(String topic) {
-    ArrayList<Question> q = new ArrayList<Question>();
+  private ArrayList<QuestionADT> getQuestionsByTopic(String topic) {
+    ArrayList<QuestionADT> q = new ArrayList<QuestionADT>();
     for (int i = 0; i < questions.size(); i++) {
       if (questions.get(i).getTopic().equalsIgnoreCase(topic)) {
         q.add(questions.get(i));
@@ -68,9 +73,10 @@ public class QuestionCollection implements CollectionADT {
    */
   public void buildQuizQuestions(ArrayList<String> topics) {
     System.out.println("Getting questions of topic(s): " + topics.toString());
-    topicQuestions = new ArrayList<Question>();
+    topicQuestions = new ArrayList<QuestionADT>();
     for (int i = 0; i < topics.size(); i++) {
-      ArrayList<Question> possibleQuestions = getQuestionsByTopic(topics.get(i));
+      // add all possible questions
+      ArrayList<QuestionADT> possibleQuestions = getQuestionsByTopic(topics.get(i));
       topicQuestions.addAll(possibleQuestions);
     }
     System.out.println("Found " + topicQuestions.size() + " questions");
@@ -81,17 +87,16 @@ public class QuestionCollection implements CollectionADT {
    * @param n is the number of questions to pick
    */
   public void randomSelection(int n) {
-      randomQuestions = new ArrayList<Question>();
+      randomQuestions = new ArrayList<QuestionADT>();
 	  if (n >= topicQuestions.size()) { // Returns all of the questions if the number desired is greater than the topic list size
 	      randomQuestions.addAll(topicQuestions);
-		  System.out.println("n greater than size of questions " + randomQuestions.size());
 		  return;
 	  }
 	  ArrayList<Integer> current_questions = new ArrayList<Integer>();
 	  while (current_questions.size() != n) {
 		  int index = rng.nextInt(topicQuestions.size());
 		  if (!current_questions.contains(index)) { // Checks if the question has already been selected
-			  Question q = topicQuestions.get(index);
+			  QuestionADT q = topicQuestions.get(index);
 			  randomQuestions.add(q);
 			  current_questions.add(index);
 		  }
@@ -102,7 +107,7 @@ public class QuestionCollection implements CollectionADT {
    * method to get the topic questions for the quiz
    * @return
    */
-  public ArrayList<Question> getTopicQuestions() {
+  public ArrayList<QuestionADT> getTopicQuestions() {
     return this.topicQuestions;
   }
   
@@ -110,7 +115,7 @@ public class QuestionCollection implements CollectionADT {
    * method to get a set number of random questions for the quiz
    * @return
    */
-  public ArrayList<Question> getRandomQuestions() {
+  public ArrayList<QuestionADT> getRandomQuestions() {
     return this.randomQuestions;
   }
   
@@ -135,7 +140,7 @@ public class QuestionCollection implements CollectionADT {
    * @return
    */
   @SuppressWarnings("unchecked")
-  public JSONObject toJSONString(Question q) {
+  public JSONObject toJSONString(QuestionADT q) {
     JSONObject question = new JSONObject();
     question.put("meta-data", q.getMetaData());
     question.put("questionText", q.getQuestionText());
@@ -164,7 +169,7 @@ public class QuestionCollection implements CollectionADT {
   public void writeToJSON() throws IOException {
       BufferedWriter toJSON = new BufferedWriter(new FileWriter("questions.json"));
       toJSON.write("{ \"questionArray\": [");
-      for (Question q : questions) {
+      for (QuestionADT q : questions) {
           toJSON.write(toJSONString(q).toJSONString());
       }
       toJSON.write("]}");
@@ -195,9 +200,8 @@ public class QuestionCollection implements CollectionADT {
    * @throws FileNotFoundException 
    */
   public void addQuestionsFromJSON(String filepath) throws FileNotFoundException, IOException, ParseException {
-      System.out.println("Add Questions called");
 	  parser = new ParseJSON(filepath);
-	  ArrayList<Question> new_questions = parser.parseFile();
+	  ArrayList<QuestionADT> new_questions = parser.parseFile();
 	  questions.addAll(new_questions);
 	  topics = parser.getTopicList(questions);
   }

@@ -1,3 +1,6 @@
+// Team Project ATeam 32- Quiz Generator
+// Created by: Anand Madathil, Mayukh Misra, Hayley Stoneman, Jake Schraufnagel, Shalini Bare
+
 package application;
 
 
@@ -13,7 +16,7 @@ import org.json.simple.parser.ParseException;
 
 /**
  * Class for parsing a JSON file of questions given the file path
- *
+ * @author Hayley Stoneman, Jake Schraufnagel
  */
 public class ParseJSON {
   private String filepath; // file path
@@ -27,15 +30,15 @@ public class ParseJSON {
   }
 
   /**
-   * Public method to parse the file in the ParseJSON object, returns an ArrayList of Question
+   * Public method to parse the file in the ParseJSON object, returns an ArrayList of QuestionADT
    * @return
    * @throws FileNotFoundException
    * @throws IOException
    * @throws ParseException
    */
-  public ArrayList<Question> parseFile()
+  public ArrayList<QuestionADT> parseFile()
       throws FileNotFoundException, IOException, ParseException {
-    ArrayList<Question> questions = new ArrayList<Question>();
+    ArrayList<QuestionADT> questions = new ArrayList<QuestionADT>();
     Object obj;
 
     obj = new JSONParser().parse(new FileReader(filepath));
@@ -61,7 +64,7 @@ public class ParseJSON {
           correctAnswer = j;
         }
       }
-      Question newQuestion; // create new question
+      QuestionADT newQuestion; // create new question
       
         newQuestion = new Question(metadata, questionText, topic, imgText, choices, correctAnswer);
       
@@ -75,7 +78,7 @@ public class ParseJSON {
    * @param questions
    * @return
    */
-  public ArrayList<String> getTopicList(ArrayList<Question> questions) {
+  public ArrayList<String> getTopicList(ArrayList<QuestionADT> questions) {
     ArrayList<String> topics = new ArrayList<String>();
     for (int i = 0; i < questions.size(); i++) {
       if (!topics.contains(questions.get(i).getTopic())) {
